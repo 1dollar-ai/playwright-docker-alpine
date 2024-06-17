@@ -1,24 +1,21 @@
-FROM node:14.16-alpine
+FROM node:20-alpine
+
+# Configure the repositories for the correct Alpine version
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.13/main" > /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/v3.13/community" >> /etc/apk/repositories
 
 # Install Chrome and tini
 USER root
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/v3.12/main" >> /etc/apk/repositories \
-    && apk upgrade -U -a \
-    && apk add \
-    libstdc++ \
+RUN apk add --no-cache \
     chromium \
-    harfbuzz \
     nss \
     freetype \
+    harfbuzz \
+    ca-certificates \
     ttf-freefont \
     font-noto-emoji \
-    wqy-zenhei \
-    && apk add --no-cache tini \
-    && rm -rf /var/cache/* \
-    && mkdir /var/cache/apk
+    tini
+   # wqy-zenhei # pacote nao encontrado no APK. Se for necessário temos que achar um substituto
 
 COPY local.conf /etc/fonts/local.conf
 
